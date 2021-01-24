@@ -245,7 +245,12 @@ defmodule ICalendar.Util.Deserialize do
 
     {:ok, ICalendar.Util.DateParser.parse(date_string, timezone)}
   rescue
-    e -> {:error, Exception.message(e)}
+    _ ->
+      try do
+        {:ok, ICalendar.Util.DateParser.parse(date_string, "Etc/UTC")}
+      rescue
+        e -> {:error, Exception.message(e)}
+      end
   end
 
   def to_date(date_string, %{"VALUE" => "DATE"}) do
