@@ -108,11 +108,14 @@ defmodule ICalendar.Util.Deserialize do
         acc
       ) do
     exdates = Map.get(acc, :exdates, [])
-    new_dates = String.split(new_exdates, ",")
-    |> Enum.map(fn exdate ->
-      {:ok, timestamp} = to_date(exdate, params)
-      timestamp
-    end)
+
+    new_dates =
+      String.split(new_exdates, ",")
+      |> Enum.map(fn exdate ->
+        {:ok, timestamp} = to_date(exdate, params)
+        timestamp
+      end)
+
     %{acc | exdates: Enum.concat(new_dates, exdates)}
   end
 
