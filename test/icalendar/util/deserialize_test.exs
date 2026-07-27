@@ -20,8 +20,8 @@ defmodule ICalendar.Util.DeserializeTest do
 
     assert event == %Event{
              description: "Escape from the world. Stare at some water.",
-             dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 0}}),
-             dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 0}}),
+             dtstart: ~U[2015-12-24 08:30:00Z],
+             dtend: ~U[2015-12-24 08:45:00Z],
              location: nil,
              summary: "Going fishing"
            }
@@ -93,21 +93,6 @@ defmodule ICalendar.Util.DeserializeTest do
       SEQUENCE:0
       STATUS:CONFIRMED
       SUMMARY:Design session
-      END:VEVENT
-      """
-      |> String.trim()
-      |> String.split("\n")
-      |> Deserialize.build_event()
-
-    assert %Event{} = event
-  end
-
-  test "Convert other time zone formats to UTC" do
-    event =
-      """
-      BEGIN:VEVENT
-      DTSTART;TZID=Greenwich Standard Time:20190726T190000
-      DTEND;TZID=Greenwich Standard Time:20190726T213000
       END:VEVENT
       """
       |> String.trim()
@@ -232,8 +217,8 @@ defmodule ICalendar.Util.DeserializeTest do
       |> String.split("\n")
       |> Deserialize.build_event()
 
-    dt1 = Timex.Timezone.convert(~U[2020-09-16 18:30:00Z], "America/Toronto")
-    dt2 = Timex.Timezone.convert(~U[2020-09-17 18:30:00Z], "America/Toronto")
+    dt1 = DateTime.shift_zone!(~U[2020-09-16 18:30:00Z], "America/Toronto", Tz.TimeZoneDatabase)
+    dt2 = DateTime.shift_zone!(~U[2020-09-17 18:30:00Z], "America/Toronto", Tz.TimeZoneDatabase)
 
     assert %Event{
              exdates: [

@@ -9,7 +9,7 @@ defmodule ICalendar.Mixfile do
       app: :icalendar,
       name: "ICalendar",
       version: @version,
-      elixir: "~> 1.9",
+      elixir: "~> 1.17",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -19,12 +19,12 @@ defmodule ICalendar.Mixfile do
   end
 
   def application do
-    [applications: [:timex]]
+    [extra_applications: [:logger]]
   end
 
   defp deps do
     [
-      {:timex, "~> 3.4"},
+      {:tz, "~> 0.28"},
       {:mix_test_watch, ">= 0.0.0", only: :dev},
       {:ex_doc, ">= 0.0.0", only: [:dev, :test], runtime: false}
     ]

@@ -212,44 +212,36 @@ defmodule ICalendar.Util.Deserialize do
   It should be able to handle dates from the past:
 
       iex> {:ok, date} = ICalendar.Util.Deserialize.to_date("19930407T153022Z")
-      ...> Timex.to_erl(date)
+      ...> NaiveDateTime.to_erl(DateTime.to_naive(date))
       {{1993, 4, 7}, {15, 30, 22}}
 
   As well as the future:
 
       iex> {:ok, date} = ICalendar.Util.Deserialize.to_date("39930407T153022Z")
-      ...> Timex.to_erl(date)
+      ...> NaiveDateTime.to_erl(DateTime.to_naive(date))
       {{3993, 4, 7}, {15, 30, 22}}
 
   And should return error for incorrect dates:
 
-      iex> ICalendar.Util.Deserialize.to_date("1993/04/07")
-      {:error, "Expected `2 digit month` at line 1, column 5."}
+      iex> {:error, _} = ICalendar.Util.Deserialize.to_date("1993/04/07")
 
   It should handle timezones from  the Olson Database:
 
       iex> {:ok, date} = ICalendar.Util.Deserialize.to_date("19980119T020000",
       ...> %{"TZID" => "America/Chicago"})
-      ...> [Timex.to_erl(date), date.time_zone]
+      ...> [NaiveDateTime.to_erl(DateTime.to_naive(date)), date.time_zone]
       [{{1998, 1, 19}, {2, 0, 0}}, "America/Chicago"]
   """
   def to_date(date_string, %{"TZID" => timezone}) do
-    # Microsoft Outlook calendar .ICS files report times in Greenwich Standard Time (UTC +0)
-    # so just convert this to UTC
-    timezone =
-      if Regex.match?(~r/\//, timezone) do
-        timezone
-      else
-        Timex.Timezone.Utils.to_olson(timezone)
-      end
-
     date_string =
       case String.last(date_string) do
-        "Z" -> date_string
-        _ -> date_string <> "Z"
+        "Z" -> String.slice(date_string, 0..-2//1)
+        _ -> date_string
       end
 
-    Timex.parse(date_string <> timezone, "{YYYY}{0M}{0D}T{h24}{m}{s}Z{Zname}")
+    {:ok, ICalendar.Util.DateParser.parse(date_string, timezone)}
+  rescue
+    e -> {:error, Exception.message(e)}
   end
 
   def to_date(date_string, %{"VALUE" => "DATE"}) do

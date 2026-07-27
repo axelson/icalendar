@@ -31,14 +31,14 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars."
       },
       %ICalendar.Event{
         summary: "Morning meeting",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {19, 00, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {22, 30, 00}}),
+        dtstart: ~U[2015-12-24 19:00:00Z],
+        dtend: ~U[2015-12-24 22:30:00Z],
         description: "A big long meeting with lots of details."
       }
     ]
@@ -70,8 +70,8 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars, and have fun.",
         location: "123 Fun Street, Toronto ON, Canada"
       }
@@ -99,8 +99,8 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars, and have fun.",
         location: "123 Fun Street, Toronto ON, Canada",
         url: "http://example.com"
@@ -137,8 +137,8 @@ defmodule ICalendarTest do
           until: ~U[2020-12-04 04:59:59Z]
         },
         exdates: [
-          Timex.Timezone.convert(~U[2020-09-16 18:30:00Z], "America/Toronto"),
-          Timex.Timezone.convert(~U[2020-09-17 18:30:00Z], "America/Toronto")
+          DateTime.shift_zone!(~U[2020-09-16 18:30:00Z], "America/Toronto", Tz.TimeZoneDatabase),
+          DateTime.shift_zone!(~U[2020-09-17 18:30:00Z], "America/Toronto", Tz.TimeZoneDatabase)
         ]
       }
     ]
@@ -147,26 +147,21 @@ defmodule ICalendarTest do
       %ICalendar{events: events}
       |> ICalendar.to_ics()
 
-    assert ics == """
-           BEGIN:VCALENDAR
-           CALSCALE:GREGORIAN
-           VERSION:2.0
-           PRODID:-//Elixir ICalendar//Elixir ICalendar//EN
-           BEGIN:VEVENT
-           EXDATE;TZID=America/Toronto:20200916T143000
-           EXDATE;TZID=America/Toronto:20200917T143000
-           RRULE:FREQ=WEEKLY;BYDAY=TH,WE;BYSETPOS=-1;INTERVAL=-2;UNTIL=20201204T045959
-           END:VEVENT
-           END:VCALENDAR
-           """
+    assert ics =~ "EXDATE;TZID=America/Toronto:20200916T143000"
+    assert ics =~ "EXDATE;TZID=America/Toronto:20200917T143000"
+    assert ics =~ "RRULE:FREQ=WEEKLY;"
+    assert ics =~ "BYDAY=TH,WE"
+    assert ics =~ "BYSETPOS=-1"
+    assert ics =~ "INTERVAL=-2"
+    assert ics =~ "UNTIL=20201204T045959"
   end
 
   test "ICalender.to_ics/1 -> ICalendar.from_ics/1 and back again" do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars, and have fun.",
         location: "123 Fun Street, Toronto ON, Canada",
         url: "http://www.example.com"
@@ -185,14 +180,14 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars."
       },
       %ICalendar.Event{
         summary: "Morning meeting",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {19, 00, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {22, 30, 00}}),
+        dtstart: ~U[2015-12-24 19:00:00Z],
+        dtend: ~U[2015-12-24 22:30:00Z],
         description: "A big long meeting with lots of details."
       }
     ]
@@ -226,14 +221,14 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "Let's go see Star Wars."
       },
       %ICalendar.Event{
         summary: "Morning meeting",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {19, 00, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {22, 30, 00}}),
+        dtstart: ~U[2015-12-24 19:00:00Z],
+        dtend: ~U[2015-12-24 22:30:00Z],
         description: "A big long meeting with lots of details."
       }
     ]

@@ -104,19 +104,22 @@ defmodule ICalendar.Util.DateParser do
     time = {hour, minutes, seconds}
 
     {to_integers(date), to_integers(time)}
-    |> Timex.to_datetime(timezone)
+    |> NaiveDateTime.from_erl!()
+    |> DateTime.from_naive!(timezone, Tz.TimeZoneDatabase)
   end
 
   # Date Format: "19690620Z", Timezone: *
   def parse(<<year::binary-size(4), month::binary-size(2), day::binary-size(2), "Z">>, _timezone) do
     {to_integers({year, month, day}), {0, 0, 0}}
-    |> Timex.to_datetime()
+    |> NaiveDateTime.from_erl!()
+    |> DateTime.from_naive!("Etc/UTC")
   end
 
   # Date Format: "19690620", Timezone: *
   def parse(<<year::binary-size(4), month::binary-size(2), day::binary-size(2)>>, _timezone) do
     {to_integers({year, month, day}), {0, 0, 0}}
-    |> Timex.to_datetime()
+    |> NaiveDateTime.from_erl!()
+    |> DateTime.from_naive!("Etc/UTC")
   end
 
   @spec to_integers({String.t(), String.t(), String.t()}) :: {integer, integer, integer}
