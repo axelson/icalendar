@@ -180,8 +180,8 @@ defmodule ICalendarTest do
     events = [
       %ICalendar.Event{
         summary: "Film with Amy and Adam",
-        dtstart: Timex.to_datetime({{2015, 12, 24}, {8, 30, 00}}),
-        dtend: Timex.to_datetime({{2015, 12, 24}, {8, 45, 00}}),
+        dtstart: ~U[2015-12-24 08:30:00Z],
+        dtend: ~U[2015-12-24 08:45:00Z],
         description: "First line\nThis is a new line\n\nDouble newline",
         location: "123 Fun Street, Toronto ON, Canada",
         url: "http://www.example.com"
